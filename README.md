@@ -37,6 +37,7 @@ git clone https://github.com/theshivammaheshwari/financecalculator.git
 
 # Navigate to the project directory
 cd financecalculator
+npm install gh-pages --save-dev
 
 # Install dependencies
 npm install
