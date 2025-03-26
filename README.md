@@ -17,7 +17,7 @@ This is a React-based web application that calculates the average price of stock
 
 ## 📂 Folder Structure
 ```bash
-stockcalculator/
+financecalculator/
 ├── public/
 ├── src/
 │   ├── components/
