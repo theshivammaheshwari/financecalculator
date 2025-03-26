@@ -36,7 +36,7 @@ stockcalculator/
 git clone https://github.com/theshivammaheshwari/financecalculator.git
 
 # Navigate to the project directory
-cd stockcalculator
+cd financecalculator
 
 # Install dependencies
 npm install
