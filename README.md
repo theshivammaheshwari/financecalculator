@@ -33,7 +33,7 @@ stockcalculator/
 ## 📥 Installation
 ```bash
 # Clone the repository
-git clone https://github.com/theshivammaheshwari/stockcalculator.git
+git clone https://github.com/theshivammaheshwari/financecalculator.git
 
 # Navigate to the project directory
 cd stockcalculator
@@ -47,40 +47,51 @@ npm install
 # Start the development server
 npm run dev
 ```
-Then open **http://localhost:5173/** in your browser.
 
 ## 🌍 Deployment on GitHub Pages
-```bash
-# Set homepage in package.json
-"homepage": "https://theshivammaheshwari.github.io/stockcalculator"
 
-# Install gh-pages package
-npm install gh-pages --save-dev
+If you are deploying using GitHub Pages, update your `package.json` file:
 
-# Modify package.json scripts
+```json
 "scripts": {
   "predeploy": "npm run build",
   "deploy": "gh-pages -d dist"
 }
-
-# Deploy the project
-npm run deploy
 ```
-Your project will be live at:
-👉 **https://theshivammaheshwari.github.io/stockcalculator/**
 
-## 📌 Notes
-```bash
-# If the website appears blank after deployment, update vite.config.ts
+If you have `vite.config.ts` (TypeScript version), add the following:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
 export default defineConfig({
-  base: '/stockcalculator/',
+  plugins: [react()],
+  base: '/financecalculator/', // ← Add this line
 });
+```
 
-# If using React Router, add a 404.html file for proper routing
-cp dist/index.html dist/404.html
+If you have `vite.config.js` (JavaScript version), add the following:
+
+```js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/financecalculator/', // ← Add this line
+});
+```
+
+Then deploy using:
+
+```sh
+npm run deploy
 ```
 
 ## 🤝 Contribution
 Feel free to contribute by submitting issues or pull requests. Happy coding! 🚀
-```
+
+## License
+This project is licensed under the MIT License.
 
