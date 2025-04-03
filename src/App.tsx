@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface StockEntry {
@@ -11,6 +11,172 @@ interface Results {
   totalUnits: number;
   averagePrice: number;
   totalAmount: number;
+}
+
+function StockSplitCalculator() {
+  const [currentPrice, setCurrentPrice] = useState<number>(100);
+  const [splitRatio, setSplitRatio] = useState<string>("1:2");
+  const [sharesOwned, setSharesOwned] = useState<number>(100);
+  const [results, setResults] = useState<{
+    newPrice: number;
+    additionalShares: number;
+    totalShares: number;
+    refundAmount: number;
+  } | null>(null);
+
+  const calculateSplit = () => {
+    const [newShares, oldShares] = splitRatio.split(":").map(Number);
+    
+    if (!newShares || !oldShares || newShares <= 0 || oldShares <= 0) {
+      alert("Please enter a valid split ratio (e.g., 1:2)");
+      return;
+    }
+
+  const splitFactor = newShares / oldShares;
+
+// 1. Calculate Additional Shares
+const additionalSharesFloat = (sharesOwned / oldShares) * newShares;
+const additionalShares = Math.floor(additionalSharesFloat);
+
+// 2. Total Shares After Split
+const totalShares = sharesOwned + additionalShares;
+
+// 3. New Stock Price Calculation
+const newPrice = (currentPrice * sharesOwned) / totalShares;
+
+// 4. Fractional Shares & Refund Calculation
+const fractionalShares = additionalSharesFloat - additionalShares;
+const refundAmount = fractionalShares * newPrice;
+
+setResults({
+  newPrice: Number(newPrice.toFixed(2)),
+  additionalShares,
+  totalShares,
+  refundAmount: Number(refundAmount.toFixed(2))
+});
+};
+
+const clearFields = () => {
+  setCurrentPrice(100);
+  setSplitRatio("1:2");
+  setSharesOwned(100);
+  setResults(null);
+};
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 2
+    }).format(value);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Current Stock Price
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-2 text-gray-500">₹</span>
+              <input
+                type="number"
+                value={currentPrice}
+                onChange={(e) => setCurrentPrice(Number(e.target.value))}
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter current price"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Stock Split Ratio (New Shares:Old Shares)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="text"
+                value={splitRatio}
+                onChange={(e) => setSplitRatio(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g., 1:2"
+              />
+              <div className="bg-blue-50 px-3 py-2 rounded-md text-sm text-blue-600">
+                Example 1:2
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Number of Shares Owned
+            </label>
+            <input
+              type="number"
+              value={sharesOwned}
+              onChange={(e) => setSharesOwned(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter number of shares"
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              onClick={clearFields}
+              className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Clear Fields
+            </button>
+            <button
+              onClick={calculateSplit}
+              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+            >
+              Calculate
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-6 rounded-lg">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Split Results</h2>
+          {results ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
+                <span className="text-gray-600">New Stock Price:</span>
+                <span className="text-xl font-semibold text-green-600">
+                  {formatCurrency(results.newPrice)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
+                <span className="text-gray-600">Additional Shares:</span>
+                <span className="text-xl font-semibold text-blue-600">
+                  {results.additionalShares}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
+                <span className="text-gray-600">Total Shares:</span>
+                <span className="text-xl font-semibold text-indigo-600">
+                  {results.totalShares}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
+                <span className="text-gray-600">Refund Amount:</span>
+                <span className="text-xl font-semibold text-purple-600">
+                  {formatCurrency(results.refundAmount)}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              Enter values and click Calculate to see results
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function StockAverageCalculator() {
@@ -336,17 +502,41 @@ function EMICalculator() {
 }
 
 function SIPCalculator() {
-  const [calculationType, setCalculationType] = useState<'sip' | 'lumpsum'>('sip');
+  const [calculationType, setCalculationType] = useState<'sip' | 'lumpsum' | 'step-up'>('sip');
   const [amount, setAmount] = useState<number>(5000);
   const [years, setYears] = useState<number>(10);
   const [rate, setRate] = useState<number>(12);
   const [lumpsum, setLumpsum] = useState<number>(100000);
+  const [stepUpRate, setStepUpRate] = useState<number>(10);
 
   const calculateSIP = () => {
     const monthlyRate = rate / (12 * 100);
     const months = years * 12;
     const futureValue = amount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
     const totalInvestment = amount * months;
+    const totalReturns = futureValue - totalInvestment;
+    
+    return {
+      futureValue: Math.round(futureValue),
+      totalInvestment: Math.round(totalInvestment),
+      totalReturns: Math.round(totalReturns)
+    };
+  };
+
+  const calculateStepUpSIP = () => {
+    let totalInvestment = 0;
+    let futureValue = 0;
+    let monthlyAmount = amount;
+    const monthlyRate = rate / (12 * 100);
+
+    for (let year = 0; year < years; year++) {
+      for (let month = 0; month < 12; month++) {
+        totalInvestment += monthlyAmount;
+        futureValue = (futureValue + monthlyAmount) * (1 + monthlyRate);
+      }
+      monthlyAmount += monthlyAmount * (stepUpRate / 100);
+    }
+
     const totalReturns = futureValue - totalInvestment;
     
     return {
@@ -367,7 +557,11 @@ function SIPCalculator() {
     };
   };
 
-  const result = calculationType === 'sip' ? calculateSIP() : calculateLumpsum();
+  const result = calculationType === 'sip' 
+    ? calculateSIP() 
+    : calculationType === 'step-up'
+    ? calculateStepUpSIP()
+    : calculateLumpsum();
 
   const pieData = [
     { name: 'Investment', value: result.totalInvestment },
@@ -398,6 +592,26 @@ function SIPCalculator() {
           'Future Value': Math.round(futureValue)
         });
       }
+    } else if (calculationType === 'step-up') {
+      let totalInvestment = 0;
+      let futureValue = 0;
+      let monthlyAmount = amount;
+      const monthlyRate = rate / (12 * 100);
+
+      for (let year = 0; year <= years; year++) {
+        if (year > 0) {
+          for (let month = 0; month < 12; month++) {
+            totalInvestment += monthlyAmount;
+            futureValue = (futureValue + monthlyAmount) * (1 + monthlyRate);
+          }
+          monthlyAmount += monthlyAmount * (stepUpRate / 100);
+        }
+        data.push({
+          year,
+          Investment: Math.round(totalInvestment),
+          'Future Value': Math.round(futureValue)
+        });
+      }
     } else {
       for (let year = 0; year <= years; year++) {
         const futureValue = lumpsum * Math.pow(1 + rate / 100, year);
@@ -423,7 +637,18 @@ function SIPCalculator() {
           }`}
         >
           <Coins className="w-5 h-5" />
-          SIP Investment
+          Regular SIP
+        </button>
+        <button
+          onClick={() => setCalculationType('step-up')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${
+            calculationType === 'step-up'
+              ? 'bg-indigo-600 text-white shadow-lg'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          <ArrowUpRight className="w-5 h-5" />
+          Step-up SIP
         </button>
         <button
           onClick={() => setCalculationType('lumpsum')}
@@ -434,13 +659,13 @@ function SIPCalculator() {
           }`}
         >
           <Wallet className="w-5 h-5" />
-          Lumpsum Investment
+          Lumpsum
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
-          {calculationType === 'sip' ? (
+          {calculationType === 'sip' || calculationType === 'step-up' ? (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Monthly Investment
@@ -487,8 +712,36 @@ function SIPCalculator() {
                     type="number"
                     value={lumpsum}
                     onChange={(e) => setLumpsum(Number(e.target.value))}
+                    
                     className="w-32 pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {calculationType === 'step-up' && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Annual Step-up Rate (%)
+              </label>
+              <div className="flex gap-4 items-center">
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={stepUpRate}
+                  onChange={(e) => setStepUpRate(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={stepUpRate}
+                    onChange={(e) => setStepUpRate(Number(e.target.value))}
+                    className="w-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <span className="absolute right-3 top-2 text-gray-500">%</span>
                 </div>
               </div>
             </div>
@@ -630,7 +883,7 @@ function SIPCalculator() {
 }
 
 function App() {
-  const [calculatorType, setCalculatorType] = useState<'average' | 'emi' | 'sip'>('average');
+  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split'>('average');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -643,7 +896,7 @@ function App() {
             </h1>
             <nav className="space-y-2">
               <button
-                onClick={() => setCalculatorType('average')}
+                onClick={() => setCalculator('average')}
                 className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
                   calculatorType === 'average' 
                     ? 'bg-green-50 text-green-600' 
@@ -654,7 +907,18 @@ function App() {
                 Stock Average
               </button>
               <button
-                onClick={() => setCalculatorType('emi')}
+                onClick={() => setCalculator('split')}
+                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                  calculatorType === 'split' 
+                    ? 'bg-green-50 text-green-600' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Split className="h-5 w-5" />
+                Stock Split
+              </button>
+              <button
+                onClick={() => setCalculator('emi')}
                 className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
                   calculatorType === 'emi' 
                     ? 'bg-green-50 text-green-600' 
@@ -665,7 +929,7 @@ function App() {
                 EMI Calculator
               </button>
               <button
-                onClick={() => setCalculatorType('sip')}
+                onClick={() => setCalculator('sip')}
                 className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
                   calculatorType === 'sip' 
                     ? 'bg-green-50 text-green-600' 
@@ -688,6 +952,11 @@ function App() {
                     <Calculator className="w-8 h-8 text-green-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">Stock market average calculator</h1>
                   </>
+                ) : calculatorType === 'split' ? (
+                  <>
+                    <Split className="w-8 h-8 text-green-600 animate-bounce" />
+                    <h1 className="text-3xl font-bold text-gray-800">Stock Split Calculator</h1>
+                  </>
                 ) : calculatorType === 'emi' ? (
                   <>
                     <IndianRupee className="w-8 h-8 text-green-600 animate-bounce" />
@@ -703,6 +972,8 @@ function App() {
               
               {calculatorType === 'average' ? (
                 <StockAverageCalculator />
+              ) : calculatorType === 'split' ? (
+                <StockSplitCalculator />
               ) : calculatorType === 'emi' ? (
                 <EMICalculator />
               ) : (
