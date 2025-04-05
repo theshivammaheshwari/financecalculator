@@ -184,6 +184,7 @@ function TripCalculator() {
                 <option value="Food">Food</option>
                 <option value="Accommodation">Accommodation</option>
                 <option value="Activities">Activities</option>
+                <option value="Drinks">Drinks</option>
                 <option value="Other">Other</option>
               </select>
               <div className="relative flex-1">
