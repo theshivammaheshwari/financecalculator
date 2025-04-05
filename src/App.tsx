@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface StockEntry {
@@ -302,6 +302,7 @@ function TripCalculator() {
 }
 
 function StockSplitCalculator() {
+  // Implement the stock split calculator functionality
   const [currentPrice, setCurrentPrice] = useState<number>(100);
   const [splitRatio, setSplitRatio] = useState<string>("1:2");
   const [sharesOwned, setSharesOwned] = useState<number>(100);
@@ -320,36 +321,36 @@ function StockSplitCalculator() {
       return;
     }
 
-  const splitFactor = newShares / oldShares;
+    const splitFactor = newShares / oldShares;
 
-// 1. Calculate Additional Shares
-const additionalSharesFloat = (sharesOwned / oldShares) * newShares;
-const additionalShares = Math.floor(additionalSharesFloat);
+    // 1. Calculate Additional Shares
+    const additionalSharesFloat = (sharesOwned / oldShares) * newShares;
+    const additionalShares = Math.floor(additionalSharesFloat);
 
-// 2. Total Shares After Split
-const totalShares = sharesOwned + additionalShares;
+    // 2. Total Shares After Split
+    const totalShares = sharesOwned + additionalShares;
 
-// 3. New Stock Price Calculation
-const newPrice = (currentPrice * sharesOwned) / totalShares;
+    // 3. New Stock Price Calculation
+    const newPrice = (currentPrice * sharesOwned) / totalShares;
 
-// 4. Fractional Shares & Refund Calculation
-const fractionalShares = additionalSharesFloat - additionalShares;
-const refundAmount = fractionalShares * newPrice;
+    // 4. Fractional Shares & Refund Calculation
+    const fractionalShares = additionalSharesFloat - additionalShares;
+    const refundAmount = fractionalShares * newPrice;
 
-setResults({
-  newPrice: Number(newPrice.toFixed(2)),
-  additionalShares,
-  totalShares,
-  refundAmount: Number(refundAmount.toFixed(2))
-});
-};
+    setResults({
+      newPrice: Number(newPrice.toFixed(2)),
+      additionalShares,
+      totalShares,
+      refundAmount: Number(refundAmount.toFixed(2))
+    });
+  };
 
-const clearFields = () => {
-  setCurrentPrice(100);
-  setSplitRatio("1:2");
-  setSharesOwned(100);
-  setResults(null);
-};
+  const clearFields = () => {
+    setCurrentPrice(100);
+    setSplitRatio("1:2");
+    setSharesOwned(100);
+    setResults(null);
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
