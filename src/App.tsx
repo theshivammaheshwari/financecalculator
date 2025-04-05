@@ -13,6 +13,294 @@ interface Results {
   totalAmount: number;
 }
 
+interface ExpenseItem {
+  type: string;
+  amount: number;
+}
+
+function TripCalculator() {
+  const [distance, setDistance] = useState<number>(530);
+  const [fuelEfficiency, setFuelEfficiency] = useState<number>(15);
+  const [fuelCostPerLiter, setFuelCostPerLiter] = useState<number>(100);
+  const [people, setPeople] = useState<number>(4);
+  const [additionalExpenses, setAdditionalExpenses] = useState<ExpenseItem[]>([
+    { type: 'Food', amount: 500 }
+  ]);
+  const [expenseType, setExpenseType] = useState<string>('Food');
+  const [expenseAmount, setExpenseAmount] = useState<string>('');
+
+  const fuelRequired = distance / fuelEfficiency;
+  const fuelCost = fuelRequired * fuelCostPerLiter;
+  
+  const totalAdditionalExpenses = additionalExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  
+  const totalTripCost = fuelCost + totalAdditionalExpenses;
+  
+  const costPerPerson = people > 0 ? totalTripCost / people : totalTripCost;
+
+  const handleAddExpense = () => {
+    if (expenseAmount && Number(expenseAmount) > 0) {
+      setAdditionalExpenses([
+        ...additionalExpenses,
+        { type: expenseType, amount: Number(expenseAmount) }
+      ]);
+      setExpenseAmount('');
+    }
+  };
+
+  const handleRemoveExpense = (index: number) => {
+    const updatedExpenses = [...additionalExpenses];
+    updatedExpenses.splice(index, 1);
+    setAdditionalExpenses(updatedExpenses);
+  };
+
+  const pieData = additionalExpenses.reduce((acc, expense) => {
+    const existingExpense = acc.find(item => item.name === expense.type);
+    if (existingExpense) {
+      existingExpense.value += expense.amount;
+    } else {
+      acc.push({ name: expense.type, value: expense.amount });
+    }
+    return acc;
+  }, [{ name: 'Fuel', value: fuelCost }]);
+
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Total Distance (km)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="10"
+                max="2000"
+                step="10"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="w-28 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Fuel Efficiency (km/L)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="5"
+                max="30"
+                step="0.5"
+                value={fuelEfficiency}
+                onChange={(e) => setFuelEfficiency(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={fuelEfficiency}
+                onChange={(e) => setFuelEfficiency(Number(e.target.value))}
+                className="w-28 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Fuel Cost per Liter (₹)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="70"
+                max="150"
+                step="1"
+                value={fuelCostPerLiter}
+                onChange={(e) => setFuelCostPerLiter(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                <input
+                  type="number"
+                  value={fuelCostPerLiter}
+                  onChange={(e) => setFuelCostPerLiter(Number(e.target.value))}
+                  className="w-28 pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Number of People
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={people}
+                onChange={(e) => setPeople(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={people}
+                onChange={(e) => setPeople(Number(e.target.value))}
+                className="w-28 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Add Additional Expenses</h3>
+            <div className="flex gap-2 mb-4">
+              <select
+                value={expenseType}
+                onChange={(e) => setExpenseType(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="Food">Food</option>
+                <option value="Accommodation">Accommodation</option>
+                <option value="Activities">Activities</option>
+                <option value="Other">Other</option>
+              </select>
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                <input
+                  type="number"
+                  value={expenseAmount}
+                  onChange={(e) => setExpenseAmount(e.target.value)}
+                  placeholder="Amount"
+                  className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <button
+                onClick={handleAddExpense}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                Add
+              </button>
+            </div>
+            
+            <div className="space-y-2 mt-4">
+              {additionalExpenses.map((expense, index) => (
+                <div key={index} className="flex justify-between items-center bg-white p-3 rounded-md">
+                  <span className="text-sm text-gray-600">{expense.type}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{formatCurrency(expense.amount)}</span>
+                    <button 
+                      onClick={() => handleRemoveExpense(index)}
+                      className="text-gray-400 hover:text-red-500"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-sm text-gray-600 mb-1">Estimated Fuel Cost</h3>
+              <p className="text-xl font-semibold text-blue-600">{formatCurrency(fuelCost)}</p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h3 className="text-sm text-gray-600 mb-1">Additional Expenses</h3>
+              <p className="text-xl font-semibold text-green-600">{formatCurrency(totalAdditionalExpenses)}</p>
+            </div>
+            <div className="bg-pink-50 p-4 rounded-lg">
+              <h3 className="text-sm text-gray-600 mb-1">Total Trip Cost</h3>
+              <p className="text-xl font-semibold text-pink-600">{formatCurrency(totalTripCost)}</p>
+            </div>
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h3 className="text-sm text-gray-600 mb-1">Cost Per Person</h3>
+              <p className="text-xl font-semibold text-purple-600">{formatCurrency(costPerPerson)}</p>
+            </div>
+          </div>
+
+          <div className="h-64">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Expense Breakdown</h3>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${formatCurrency(value)}`}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Trip Summary</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total Distance:</span>
+                <span className="font-medium">{distance} km</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Fuel Required:</span>
+                <span className="font-medium">{fuelRequired.toFixed(2)} liters</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Fuel Cost:</span>
+                <span className="font-medium text-blue-600">{formatCurrency(fuelCost)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Additional Expenses:</span>
+                <span className="font-medium text-green-600">{formatCurrency(totalAdditionalExpenses)}</span>
+              </div>
+              <div className="border-t pt-2 mt-2 flex justify-between">
+                <span className="font-semibold">Total Trip Cost:</span>
+                <span className="font-semibold text-pink-600">{formatCurrency(totalTripCost)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold">Split among {people} people:</span>
+                <span className="font-semibold text-purple-600">{formatCurrency(costPerPerson)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StockSplitCalculator() {
   const [currentPrice, setCurrentPrice] = useState<number>(100);
   const [splitRatio, setSplitRatio] = useState<string>("1:2");
@@ -883,7 +1171,7 @@ function SIPCalculator() {
 }
 
 function App() {
-  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split'>('average');
+  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip'>('average');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -939,6 +1227,17 @@ function App() {
                 <Coins className="h-5 w-5" />
                 SIP Calculator
               </button>
+              <button
+                onClick={() => setCalculator('trip')}
+                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                  calculatorType === 'trip' 
+                    ? 'bg-green-50 text-green-600' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <MapPin className="h-5 w-5" />
+                Trip Calculator
+              </button>
             </nav>
           </div>
         </div>
@@ -962,10 +1261,15 @@ function App() {
                     <IndianRupee className="w-8 h-8 text-green-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">EMI Calculator</h1>
                   </>
-                ) : (
+                ) : calculatorType === 'sip' ? (
                   <>
                     <Coins className="w-8 h-8 text-green-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">SIP Calculator</h1>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-8 h-8 text-green-600 animate-bounce" />
+                    <h1 className="text-3xl font-bold text-gray-800">Trip Calculator</h1>
                   </>
                 )}
               </div>
@@ -976,8 +1280,10 @@ function App() {
                 <StockSplitCalculator />
               ) : calculatorType === 'emi' ? (
                 <EMICalculator />
-              ) : (
+              ) : calculatorType === 'sip' ? (
                 <SIPCalculator />
+              ) : (
+                <TripCalculator />
               )}
             </div>
           </div>
