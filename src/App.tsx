@@ -2,6 +2,296 @@ import React, { useState } from 'react';
 import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 
+interface Expense {
+  category: string;
+  amount: number;
+  icon: React.ReactNode;
+}
+
+const defaultExpenseCategories = [
+  { name: 'Food', icon: <Utensils className="w-4 h-4" /> },
+  { name: 'Accommodation', icon: <Building className="w-4 h-4" /> },
+  { name: 'Activities', icon: <Umbrella className="w-4 h-4" /> },
+  { name: 'Other', icon: <Plus className="w-4 h-4" /> },
+];
+
+function TripCalculator() {
+  const [distance, setDistance] = useState<number>(0);
+  const [fuelEfficiency, setFuelEfficiency] = useState<number>(15);
+  const [fuelCost, setFuelCost] = useState<number>(100);
+  const [numberOfPeople, setNumberOfPeople] = useState<number>(4);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [newExpenseAmount, setNewExpenseAmount] = useState<number>(0);
+  const [newExpenseCategory, setNewExpenseCategory] = useState<string>('Food');
+
+  // Calculated values
+  const totalFuelCost = distance ? (distance / fuelEfficiency) * fuelCost : 0;
+  const totalExpenseAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0) + totalFuelCost;
+  const perPersonCost = numberOfPeople > 0 ? totalExpenseAmount / numberOfPeople : 0;
+
+  const addExpense = () => {
+    if (newExpenseAmount <= 0) return;
+
+    const categoryObject = defaultExpenseCategories.find(cat => cat.name === newExpenseCategory);
+    const icon = categoryObject ? categoryObject.icon : <Plus className="w-4 h-4" />;
+
+    setExpenses([
+      ...expenses,
+      {
+        category: newExpenseCategory,
+        amount: newExpenseAmount,
+        icon
+      }
+    ]);
+    setNewExpenseAmount(0);
+  };
+
+  const removeExpense = (index: number) => {
+    const newExpenses = [...expenses];
+    newExpenses.splice(index, 1);
+    setExpenses(newExpenses);
+  };
+
+  // Distribution data for pie chart
+  const expenseDistribution = [
+    { name: 'Fuel', value: totalFuelCost },
+    ...defaultExpenseCategories.map(category => {
+      const amount = expenses
+        .filter(exp => exp.category === category.name)
+        .reduce((sum, exp) => sum + exp.amount, 0);
+      return { name: category.name, value: amount };
+    })
+  ].filter(item => item.value > 0);
+
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Total Distance (km)</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="0"
+                max="2000"
+                step="10"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Fuel Efficiency (km/L)</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="5"
+                max="30"
+                step="0.5"
+                value={fuelEfficiency}
+                onChange={(e) => setFuelEfficiency(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={fuelEfficiency}
+                onChange={(e) => setFuelEfficiency(Number(e.target.value))}
+                className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Fuel Cost per Liter (₹)</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="50"
+                max="150"
+                step="1"
+                value={fuelCost}
+                onChange={(e) => setFuelCost(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                <input
+                  type="number"
+                  value={fuelCost}
+                  onChange={(e) => setFuelCost(Number(e.target.value))}
+                  className="w-24 pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Number of People</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={numberOfPeople}
+                onChange={(e) => setNumberOfPeople(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="number"
+                value={numberOfPeople}
+                onChange={(e) => setNumberOfPeople(Number(e.target.value))}
+                className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Add Additional Expenses</h3>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <select
+                  value={newExpenseCategory}
+                  onChange={(e) => setNewExpenseCategory(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  {defaultExpenseCategories.map((category) => (
+                    <option key={category.name} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                  <input
+                    type="number"
+                    value={newExpenseAmount || ''}
+                    onChange={(e) => setNewExpenseAmount(Number(e.target.value))}
+                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Amount"
+                  />
+                </div>
+                <button
+                  onClick={addExpense}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  Add
+                </button>
+              </div>
+
+              {expenses.length > 0 && (
+                <div className="bg-white p-3 rounded-md space-y-2">
+                  <h4 className="text-sm font-medium text-gray-700">Added Expenses:</h4>
+                  {expenses.map((expense, i) => (
+                    <div key={i} className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        {expense.icon}
+                        <span>{expense.category}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{formatCurrency(expense.amount)}</span>
+                        <button
+                          onClick={() => removeExpense(i)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-500">Estimated Fuel Cost</div>
+              <div className="text-xl font-semibold text-blue-600 flex items-center">
+                <IndianRupee className="w-4 h-4 mr-1" />
+                {formatCurrency(totalFuelCost)}
+              </div>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-500">Additional Expenses</div>
+              <div className="text-xl font-semibold text-green-600 flex items-center">
+                <IndianRupee className="w-4 h-4 mr-1" />
+                {formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0))}
+              </div>
+            </div>
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-500">Total Trip Cost</div>
+              <div className="text-xl font-semibold text-purple-600 flex items-center">
+                <IndianRupee className="w-4 h-4 mr-1" />
+                {formatCurrency(totalExpenseAmount)}
+              </div>
+            </div>
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-500">Cost Per Person</div>
+              <div className="text-xl font-semibold text-indigo-600 flex items-center">
+                <IndianRupee className="w-4 h-4 mr-1" />
+                {formatCurrency(perPersonCost)}
+              </div>
+            </div>
+          </div>
+
+          {expenseDistribution.length > 0 && (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={expenseDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${formatCurrency(value)}`}
+                  >
+                    {expenseDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
 interface StockEntry {
   units: number;
   price: number;
