@@ -85,8 +85,8 @@ function TripCalculator() {
             <div className="flex items-center gap-4">
               <input
                 type="range"
-                min="10"
-                max="2000"
+                min="5"
+                max="5000"
                 step="10"
                 value={distance}
                 onChange={(e) => setDistance(Number(e.target.value))}
@@ -158,7 +158,7 @@ function TripCalculator() {
               <input
                 type="range"
                 min="1"
-                max="10"
+                max="15"
                 step="1"
                 value={people}
                 onChange={(e) => setPeople(Number(e.target.value))}
