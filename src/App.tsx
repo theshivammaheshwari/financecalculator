@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { differenceInDays, differenceInMonths, differenceInYears, format } from 'date-fns';
 
 interface StockEntry {
   units: number;
@@ -16,6 +18,144 @@ interface Results {
 interface ExpenseItem {
   type: string;
   amount: number;
+}
+
+function AgeCalculator() {
+  const [birthDate, setBirthDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [age, setAge] = useState<{ years: number; months: number; days: number } | null>(null);
+  const [error, setError] = useState<string>("");
+
+  const calculateAge = () => {
+    setError("");
+    
+    try {
+      const start = new Date(birthDate);
+      const end = new Date(endDate);
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        setError("Please enter valid dates");
+        setAge(null);
+        return;
+      }
+      
+      if (start > end) {
+        setError("Birth date cannot be after end date");
+        setAge(null);
+        return;
+      }
+      
+      const years = differenceInYears(end, start);
+      
+      // Calculate the remaining months after accounting for years
+      const monthsAfterYears = differenceInMonths(end, new Date(start.getFullYear() + years, start.getMonth(), start.getDate()));
+      
+      // Calculate the remaining days after accounting for years and months
+      const yearMonthDate = new Date(
+        start.getFullYear() + years, 
+        start.getMonth() + monthsAfterYears,
+        start.getDate()
+      );
+      
+      let days = differenceInDays(end, yearMonthDate);
+      
+      setAge({
+        years: years,
+        months: monthsAfterYears,
+        days: days
+      });
+    } catch (err) {
+      setError("Error calculating age. Please check your dates.");
+      setAge(null);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Birth Date
+              </label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                End Date (defaults to today)
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 rounded-md">
+                {error}
+              </div>
+            )}
+            
+            <div className="pt-2">
+              <button
+                onClick={calculateAge}
+                className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all duration-300 flex items-center gap-2"
+              >
+                <Calculator className="w-4 h-4" />
+                Calculate Age
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Age Result</h2>
+            {age ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-md text-center">
+                    <div className="text-3xl font-bold text-purple-600">{age.years}</div>
+                    <div className="text-sm text-gray-500">Years</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-md text-center">
+                    <div className="text-3xl font-bold text-blue-600">{age.months}</div>
+                    <div className="text-sm text-gray-500">Months</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-md text-center">
+                    <div className="text-3xl font-bold text-green-600">{age.days}</div>
+                    <div className="text-sm text-gray-500">Days</div>
+                  </div>
+                </div>
+                
+                <div className="bg-white/50 p-4 rounded-lg">
+                  <h3 className="text-md font-medium text-gray-700 mb-2">Total Age</h3>
+                  <p className="text-lg">
+                    <span className="font-bold text-purple-600">{age.years}</span> years, 
+                    <span className="font-bold text-blue-600 ml-1">{age.months}</span> months, and 
+                    <span className="font-bold text-green-600 ml-1">{age.days}</span> days
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                Enter dates and click Calculate to see results
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function TripCalculator() {
@@ -1173,7 +1313,7 @@ function SIPCalculator() {
 }
 
 function App() {
-  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip'>('average');
+  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip' | 'age'>('average');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -1240,6 +1380,17 @@ function App() {
                 <MapPin className="h-5 w-5" />
                 Trip Calculator
               </button>
+              <button
+                onClick={() => setCalculator('age')}
+                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                  calculatorType === 'age' 
+                    ? 'bg-green-50 text-green-600' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Calendar className="h-5 w-5" />
+                Age Calculator
+              </button>
             </nav>
           </div>
         </div>
@@ -1268,6 +1419,11 @@ function App() {
                     <Coins className="w-8 h-8 text-green-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">SIP Calculator</h1>
                   </>
+                ) : calculatorType === 'age' ? (
+                  <>
+                    <Calendar className="w-8 h-8 text-purple-600 animate-bounce" />
+                    <h1 className="text-3xl font-bold text-gray-800">Age Calculator</h1>
+                  </>
                 ) : (
                   <>
                     <MapPin className="w-8 h-8 text-green-600 animate-bounce" />
@@ -1284,6 +1440,8 @@ function App() {
                 <EMICalculator />
               ) : calculatorType === 'sip' ? (
                 <SIPCalculator />
+              ) : calculatorType === 'age' ? (
+                <AgeCalculator />
               ) : (
                 <TripCalculator />
               )}
