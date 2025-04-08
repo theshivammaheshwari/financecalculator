@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { differenceInDays, differenceInMonths, differenceInYears, format } from 'date-fns';
 
@@ -18,6 +18,394 @@ interface Results {
 interface ExpenseItem {
   type: string;
   amount: number;
+}
+
+function FutureValueCalculator() {
+  const [initialAmount, setInitialAmount] = useState<number>(100);
+  const [rate, setRate] = useState<number>(10);
+  const [years, setYears] = useState<number>(5);
+  const [futureValue, setFutureValue] = useState<number>(161);
+  const [totalInterest, setTotalInterest] = useState<number>(61);
+
+  const calculateFutureValue = () => {
+    const calculatedFutureValue = initialAmount * Math.pow(1 + rate / 100, years);
+    const calculatedInterest = calculatedFutureValue - initialAmount;
+    
+    setFutureValue(Number(calculatedFutureValue.toFixed(2)));
+    setTotalInterest(Number(calculatedInterest.toFixed(2)));
+  };
+
+  React.useEffect(() => {
+    calculateFutureValue();
+  }, [initialAmount, rate, years]);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  const pieData = [
+    { name: 'Principal', value: initialAmount },
+    { name: 'Interest', value: totalInterest }
+  ];
+
+  const COLORS = ['#1e3a8a', '#ea580c'];
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-lg font-medium text-gray-700">
+              Initial Amount (₹)
+            </label>
+            <input
+              type="number"
+              value={initialAmount}
+              onChange={(e) => setInitialAmount(Number(e.target.value))}
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter initial amount"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-lg font-medium text-gray-700">
+              Rate of Interest (%)
+            </label>
+            <input
+              type="number"
+              value={rate}
+              onChange={(e) => setRate(Number(e.target.value))}
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter interest rate"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-lg font-medium text-gray-700">
+              Time Period (Years)
+            </label>
+            <input
+              type="number"
+              value={years}
+              onChange={(e) => setYears(Number(e.target.value))}
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter time period"
+            />
+          </div>
+
+          <button
+            onClick={calculateFutureValue}
+            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-300 text-lg font-medium"
+          >
+            INVEST NOW
+          </button>
+        </div>
+
+        <div className="space-y-6">
+          <div className="h-64 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={80}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  startAngle={90}
+                  endAngle={450}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+                  <tspan x="50%" dy="-10" className="text-lg font-medium">Future Value</tspan>
+                  <tspan x="50%" dy="30" className="text-2xl font-bold">{futureValue}</tspan>
+                </text>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            <div className="bg-gray-50 p-4 rounded-lg text-center">
+              <h3 className="text-lg text-gray-500">Present Value</h3>
+              <p className="text-2xl font-bold text-gray-600">₹ {initialAmount}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg text-center">
+              <h3 className="text-lg text-gray-500">Total Interest</h3>
+              <p className="text-2xl font-bold text-orange-500">₹ {totalInterest}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg text-center">
+              <h3 className="text-lg text-gray-500">Future Value</h3>
+              <p className="text-2xl font-bold text-blue-900">₹ {futureValue}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BMICalculator() {
+  const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [age, setAge] = useState<number>(33);
+  const [height, setHeight] = useState<number>(173);
+  const [weight, setWeight] = useState<number>(75);
+  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const [bmi, setBmi] = useState<number | null>(null);
+  const [bmiCategory, setBmiCategory] = useState<string>('');
+
+  const calculateBMI = () => {
+    let bmiValue: number;
+    
+    if (unit === 'metric') {
+      // BMI = weight(kg) / height(m)²
+      bmiValue = weight / Math.pow(height / 100, 2);
+    } else {
+      // BMI = 703 × weight(lb) / height(in)²
+      bmiValue = 703 * (weight / Math.pow(height, 2));
+    }
+    
+    bmiValue = parseFloat(bmiValue.toFixed(2));
+    setBmi(bmiValue);
+    
+    // Determine BMI category
+    if (bmiValue < 18.5) {
+      setBmiCategory('Underweight');
+    } else if (bmiValue >= 18.5 && bmiValue < 25) {
+      setBmiCategory('Normal');
+    } else if (bmiValue >= 25 && bmiValue < 30) {
+      setBmiCategory('Overweight');
+    } else {
+      setBmiCategory('Obesity');
+    }
+  };
+
+  const getColorByCategory = (category: string) => {
+    switch (category) {
+      case 'Underweight':
+        return 'text-yellow-500';
+      case 'Normal':
+        return 'text-green-500';
+      case 'Overweight':
+        return 'text-orange-500';
+      case 'Obesity':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
+  const getBmiStatus = () => {
+    if (!bmi) return null;
+    
+    if (bmiCategory === 'Normal') {
+      return (
+        <div className="text-green-600 font-semibold text-center mt-4">
+          Great job! You have a healthy weight.
+        </div>
+      );
+    }
+    
+    if (bmiCategory === 'Underweight') {
+      return (
+        <div className="text-yellow-600 font-semibold text-center mt-4">
+          Time to gain some weight!
+        </div>
+      );
+    }
+    
+    if (bmiCategory === 'Overweight' || bmiCategory === 'Obesity') {
+      return (
+        <div className="text-red-600 font-semibold text-center mt-4">
+          Time to run!
+          <p className="text-sm font-normal mt-2">
+            By maintaining a healthy weight, you lower your risk of developing serious health problems.
+          </p>
+        </div>
+      );
+    }
+  };
+
+  const renderBmiScale = () => {
+    if (!bmi) return null;
+    
+    // Calculate position as percentage
+    let position = 0;
+    if (bmi < 18.5) {
+      position = (bmi / 18.5) * 25; // 0-25% of scale for underweight
+    } else if (bmi < 25) {
+      position = 25 + ((bmi - 18.5) / 6.5) * 25; // 25-50% of scale for normal
+    } else if (bmi < 30) {
+      position = 50 + ((bmi - 25) / 5) * 25; // 50-75% of scale for overweight
+    } else {
+      position = 75 + Math.min(((bmi - 30) / 10) * 25, 25); // 75-100% of scale for obesity, capped at 100%
+    }
+
+    return (
+      <div className="mt-6 mb-2">
+        <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden flex">
+          <div className="h-full bg-yellow-400" style={{ width: '25%' }}></div>
+          <div className="h-full bg-green-400" style={{ width: '25%' }}></div>
+          <div className="h-full bg-orange-400" style={{ width: '25%' }}></div>
+          <div className="h-full bg-red-400" style={{ width: '25%' }}></div>
+        </div>
+        <div className="relative w-full">
+          <div 
+            className="absolute top-0 transform -translate-x-1/2 mt-1" 
+            style={{ left: `${position}%` }}
+          >
+            <div className="w-0.5 h-5 bg-black mx-auto"></div>
+          </div>
+        </div>
+        <div className="flex justify-between mt-1 text-xs">
+          <span>Underweight</span>
+          <span>Normal</span>
+          <span>Overweight</span>
+          <span>Obesity</span>
+        </div>
+      </div>
+    );
+  };
+
+  const toggleUnit = () => {
+    if (unit === 'metric') {
+      // Convert from metric to imperial
+      setHeight(Math.round(height / 2.54)); // cm to inches
+      setWeight(Math.round(weight * 2.205)); // kg to pounds
+      setUnit('imperial');
+    } else {
+      // Convert from imperial to metric
+      setHeight(Math.round(height * 2.54)); // inches to cm
+      setWeight(Math.round(weight / 2.205)); // pounds to kg
+      setUnit('metric');
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setGender('male')}
+                className={`flex-1 py-3 px-4 rounded-lg border ${
+                  gender === 'male' 
+                    ? 'bg-blue-50 border-blue-500 text-blue-700' 
+                    : 'bg-white border-gray-300 text-gray-700'
+                }`}
+              >
+                Male
+              </button>
+              <button
+                onClick={() => setGender('female')}
+                className={`flex-1 py-3 px-4 rounded-lg border ${
+                  gender === 'female' 
+                    ? 'bg-pink-50 border-pink-500 text-pink-700' 
+                    : 'bg-white border-gray-300 text-gray-700'
+                }`}
+              >
+                Female
+              </button>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Age (years)
+              </label>
+              <input
+                type="number"
+                min="2"
+                max="120"
+                value={age}
+                onChange={(e) => setAge(Number(e.target.value))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <div className="text-xs text-gray-500">Between 2 years to 120 years</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <label className="block text-sm font-medium text-gray-700">
+                  Height ({unit === 'metric' ? 'cm' : 'inches'})
+                </label>
+                <button 
+                  onClick={toggleUnit}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Switch to {unit === 'metric' ? 'ft & in' : 'cm'}
+                </button>
+              </div>
+              <input
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(Number(e.target.value))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Weight ({unit === 'metric' ? 'kg' : 'lbs'})
+              </label>
+              <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            
+            <button
+              onClick={calculateBMI}
+              className="w-full py-3 px-4 bg-orange-400 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors mt-4"
+            >
+              Calculate
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <div className="bg-gray-50 p-6 rounded-lg shadow-sm h-full">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">Your BMI Result</h2>
+            
+            {bmi ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-gray-600 mb-2">Your BMI is</div>
+                  <div className={`text-6xl font-bold ${getColorByCategory(bmiCategory)}`}>
+                    {bmi}
+                  </div>
+                  <div className={`text-xl font-medium mt-2 ${getColorByCategory(bmiCategory)}`}>
+                    {bmiCategory}
+                  </div>
+                </div>
+                
+                {renderBmiScale()}
+                {getBmiStatus()}
+                
+                <div className="text-center text-gray-600 text-sm mt-6">
+                  <p>Healthy BMI range: 18.5 kg/m² - 25 kg/m²</p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                Enter your details and click Calculate to see your BMI
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function AgeCalculator() {
@@ -1313,7 +1701,7 @@ function SIPCalculator() {
 }
 
 function App() {
-  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip' | 'age'>('average');
+  const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip' | 'age' | 'bmi' | 'future'>('average');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -1366,8 +1754,19 @@ function App() {
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Coins className="h-5 w-5" />
+                <Coins className="h-5 h-5" />
                 SIP Calculator
+              </button>
+              <button
+                onClick={() => setCalculator('future')}
+                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                  calculatorType === 'future' 
+                    ? 'bg-green-50 text-green-600' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <DollarSign className="h-5 h-5" />
+                Future Value
               </button>
               <button
                 onClick={() => setCalculator('trip')}
@@ -1390,6 +1789,17 @@ function App() {
               >
                 <Calendar className="h-5 w-5" />
                 Age Calculator
+              </button>
+              <button
+                onClick={() => setCalculator('bmi')}
+                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                  calculatorType === 'bmi' 
+                    ? 'bg-green-50 text-green-600' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Weight className="h-5 w-5" />
+                BMI Calculator
               </button>
             </nav>
           </div>
@@ -1419,10 +1829,20 @@ function App() {
                     <Coins className="w-8 h-8 text-green-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">SIP Calculator</h1>
                   </>
+                ) : calculatorType === 'future' ? (
+                  <>
+                    <DollarSign className="w-8 h-8 text-orange-600 animate-bounce" />
+                    <h1 className="text-3xl font-bold text-gray-800">Future Value Calculator</h1>
+                  </>
                 ) : calculatorType === 'age' ? (
                   <>
                     <Calendar className="w-8 h-8 text-purple-600 animate-bounce" />
                     <h1 className="text-3xl font-bold text-gray-800">Age Calculator</h1>
+                  </>
+                ) : calculatorType === 'bmi' ? (
+                  <>
+                    <Weight className="w-8 h-8 text-orange-600 animate-bounce" />
+                    <h1 className="text-3xl font-bold text-gray-800">BMI Calculator</h1>
                   </>
                 ) : (
                   <>
@@ -1440,8 +1860,12 @@ function App() {
                 <EMICalculator />
               ) : calculatorType === 'sip' ? (
                 <SIPCalculator />
+              ) : calculatorType === 'future' ? (
+                <FutureValueCalculator />
               ) : calculatorType === 'age' ? (
                 <AgeCalculator />
+              ) : calculatorType === 'bmi' ? (
+                <BMICalculator />
               ) : (
                 <TripCalculator />
               )}
