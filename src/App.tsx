@@ -1820,7 +1820,7 @@ function App() {
                   </a>
                   <a href="mailto:contact@example.com" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Mail className="h-4 w-4 mr-2" />
-                    <span>theshivammaheshwari.com</span>
+                    <span>theshivammaheshwari@gmail.com</span>
                   </a>
                   <a href="https://instagram.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Instagram className="h-4 w-4 mr-2" />
