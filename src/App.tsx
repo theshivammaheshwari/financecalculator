@@ -1807,7 +1807,7 @@ function App() {
             <div className="mt-auto pt-6 border-t border-gray-200">
               <div className="text-sm text-gray-600">
                 <p className="mb-2 font-medium">
-                  This website was conceptualized and developed by
+                  This website was developed by
 
                   <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
                     <span>Mr. Shivam Maheshwari</span>
