@@ -1807,10 +1807,15 @@ function App() {
             <div className="mt-auto pt-6 border-t border-gray-200">
               <div className="text-sm text-gray-600">
                 <p className="mb-2 font-medium">
-                  This website was conceptualized and developed by Mr. Shivam Maheshwari
+                  This website was conceptualized and developed by <a href="https://www.linkedin.com/in/theshivammaheshwari/">
+           Mr. Shivam Maheshwari
+          </a>
                 </p>
                 <p className="mb-4 text-xs">
-                  Grateful to Mr. Abhishek Jain for providing insightful suggestions that helped improve the user experience.
+                  Grateful to <a href="https://www.linkedin.com/in/abhishek-jain-794773a2/" >
+           Mr. Abhishek Jain
+          </a>
+                   for providing insightful suggestions that helped improve the user experience.
                 </p>
                 
                 <div className="flex flex-col space-y-2">
@@ -1829,6 +1834,10 @@ function App() {
                   <a href="https://facebook.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Facebook className="h-4 w-4 mr-2" />
                     <span>Facebook</span>
+                  </a>
+                  <a href="https://www.linkedin.com/in/theshivammaheshwari/" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Facebook className="h-4 w-4 mr-2" />
+                    <span>Linkedin</span>
                   </a>
                 </div>
               </div>
