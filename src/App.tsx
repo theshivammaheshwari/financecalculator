@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign, Instagram, Facebook, Linkedin, Phone, Mail } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign, Instagram, Facebook, Linkedin, Phone, Mail, Menu, X } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { differenceInDays, differenceInMonths, differenceInYears, format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface StockEntry {
   units: number;
@@ -1702,215 +1703,256 @@ function SIPCalculator() {
 
 function App() {
   const [calculatorType, setCalculator] = useState<'average' | 'emi' | 'sip' | 'split' | 'trip' | 'age' | 'bmi' | 'future'>('average');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Close sidebar when selecting a calculator on mobile
+  const handleCalculatorSelect = (type: 'average' | 'emi' | 'sip' | 'split' | 'trip' | 'age' | 'bmi' | 'future') => {
+    setCalculator(type);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
+  // Close sidebar when screen is resized from mobile to desktop
+  useEffect(() => {
+    if (!isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [isMobile]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="flex">
-        <div className="w-64 bg-white shadow-lg h-screen fixed left-0 top-0">
-          <div className="p-4 flex flex-col h-full">
-            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-8">
-              <Calculator className="h-6 w-6" />
-              Calculators
-            </h1>
-            <nav className="space-y-2">
-              <button
-                onClick={() => setCalculator('average')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'average' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <TrendingUp className="h-5 w-5" />
-                Stock Average
-              </button>
-              <button
-                onClick={() => setCalculator('split')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'split' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <Split className="h-5 w-5" />
-                Stock Split
-              </button>
-              <button
-                onClick={() => setCalculator('emi')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'emi' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <IndianRupee className="h-5 w-5" />
-                EMI Calculator
-              </button>
-              <button
-                onClick={() => setCalculator('sip')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'sip' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <Coins className="h-5 h-5" />
-                SIP Calculator
-              </button>
-              <button
-                onClick={() => setCalculator('future')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'future' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <DollarSign className="h-5 h-5" />
-                Future Value
-              </button>
-              <button
-                onClick={() => setCalculator('trip')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'trip' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <MapPin className="h-5 w-5" />
-                Trip Calculator
-              </button>
-              <button
-                onClick={() => setCalculator('age')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'age' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <Calendar className="h-5 w-5" />
-                Age Calculator
-              </button>
-              <button
-                onClick={() => setCalculator('bmi')}
-                className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
-                  calculatorType === 'bmi' 
-                    ? 'bg-green-50 text-green-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <Weight className="h-5 w-5" />
-                BMI Calculator
-              </button>
-            </nav>
-            
-            {/* Footer with credits and contact information */}
-            <div className="mt-auto pt-6 border-t border-gray-200">
-              <div className="text-sm text-gray-600">
-                <p className="mb-2 font-medium">
-                  This website was developed by
+      {/* Mobile menu toggle button */}
+      {isMobile && (
+        <div className="fixed top-4 left-4 z-50">
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 bg-white rounded-full shadow-md"
+          >
+            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      )}
 
-                  <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <span>Mr. Shivam Maheshwari</span>
-                  </a>
-                </p>
-                <p className="mb-4 text-xs">
-                  Grateful to <a href="https://linkedin.com/in/abhijain007" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <span>Mr. Abhishek Jain </span>
-                  </a>for providing insightful suggestions.
-                </p>
-                
-                <div className="flex flex-col space-y-2">
-                  <a href="tel:+919468955596" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Phone className="h-4 w-4 mr-2" />
-                    <span>+91 9468955596</span>
-                  </a>
-                  <a href="mailto:247shivam@gmail.com" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Mail className="h-4 w-4 mr-2" />
-                    <span>247shivam@gmail.com</span>
-                  </a>
-                  <a href="https://instagram.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Instagram className="h-4 w-4 mr-2" />
-                    <span>Instagram</span>
-                  </a>
-                  <a href="https://facebook.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Facebook className="h-4 w-4 mr-2" />
-                    <span>Facebook</span>
-                  </a>
-                  <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Linkedin className="h-4 w-4 mr-2" />
-                    <span>Linkedin</span>
-                  </a>
-                </div>
+      {/* Sidebar - position fixed on mobile with overlay */}
+      <div className={`${
+        isMobile 
+          ? `fixed left-0 top-0 h-full z-40 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+          : 'w-64 bg-white shadow-lg h-screen fixed left-0 top-0'
+      } bg-white shadow-lg`}>
+        <div className="p-4 flex flex-col h-full overflow-y-auto">
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-8 pt-2">
+            <Calculator className="h-6 w-6" />
+            Calculators
+          </h1>
+          <nav className="space-y-2">
+            <button
+              onClick={() => handleCalculatorSelect('average')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'average' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <TrendingUp className="h-5 w-5" />
+              Stock Average
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('split')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'split' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Split className="h-5 w-5" />
+              Stock Split
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('emi')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'emi' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <IndianRupee className="h-5 w-5" />
+              EMI Calculator
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('sip')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'sip' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Coins className="h-5 h-5" />
+              SIP Calculator
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('future')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'future' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <DollarSign className="h-5 h-5" />
+              Future Value
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('trip')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'trip' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <MapPin className="h-5 w-5" />
+              Trip Calculator
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('age')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'age' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Calendar className="h-5 w-5" />
+              Age Calculator
+            </button>
+            <button
+              onClick={() => handleCalculatorSelect('bmi')}
+              className={`w-full text-left px-4 py-2 rounded-md flex items-center gap-2 ${
+                calculatorType === 'bmi' 
+                  ? 'bg-green-50 text-green-600' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Weight className="h-5 w-5" />
+              BMI Calculator
+            </button>
+          </nav>
+          
+          {/* Footer with credits and contact information */}
+          <div className="mt-auto pt-6 border-t border-gray-200">
+            <div className="text-sm text-gray-600">
+              <p className="mb-2 font-medium">
+                This website was developed by
+
+                <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <span>Mr. Shivam Maheshwari</span>
+                </a>
+              </p>
+              <p className="mb-4 text-xs">
+                Grateful to <a href="https://linkedin.com/in/abhijain007" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <span>Mr. Abhishek Jain </span>
+                </a>for providing insightful suggestions.
+              </p>
+              
+              <div className="flex flex-col space-y-2">
+                <a href="tel:+919468955596" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <Phone className="h-4 w-4 mr-2" />
+                  <span>+91 9468955596</span>
+                </a>
+                <a href="mailto:247shivam@gmail.com" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span>247shivam@gmail.com</span>
+                </a>
+                <a href="https://instagram.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <Instagram className="h-4 w-4 mr-2" />
+                  <span>Instagram</span>
+                </a>
+                <a href="https://facebook.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <Facebook className="h-4 w-4 mr-2" />
+                  <span>Facebook</span>
+                </a>
+                <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <Linkedin className="h-4 w-4 mr-2" />
+                  <span>Linkedin</span>
+                </a>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="ml-64 flex-1 p-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8 transform transition-all duration-300 hover:shadow-2xl">
-              <div className="flex items-center gap-3 mb-8">
-                {calculatorType === 'average' ? (
-                  <>
-                    <Calculator className="w-8 h-8 text-green-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">Stock market average calculator</h1>
-                  </>
-                ) : calculatorType === 'split' ? (
-                  <>
-                    <Split className="w-8 h-8 text-green-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">Stock Split Calculator</h1>
-                  </>
-                ) : calculatorType === 'emi' ? (
-                  <>
-                    <IndianRupee className="w-8 h-8 text-green-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">EMI Calculator</h1>
-                  </>
-                ) : calculatorType === 'sip' ? (
-                  <>
-                    <Coins className="w-8 h-8 text-green-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">SIP Calculator</h1>
-                  </>
-                ) : calculatorType === 'future' ? (
-                  <>
-                    <DollarSign className="w-8 h-8 text-orange-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">Future Value Calculator</h1>
-                  </>
-                ) : calculatorType === 'age' ? (
-                  <>
-                    <Calendar className="w-8 h-8 text-purple-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">Age Calculator</h1>
-                  </>
-                ) : calculatorType === 'bmi' ? (
-                  <>
-                    <Weight className="w-8 h-8 text-orange-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">BMI Calculator</h1>
-                  </>
-                ) : (
-                  <>
-                    <MapPin className="w-8 h-8 text-green-600 animate-bounce" />
-                    <h1 className="text-3xl font-bold text-gray-800">Trip Calculator</h1>
-                  </>
-                )}
-              </div>
-              
+      {/* Overlay for mobile sidebar */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main content - adjust margin for mobile/desktop */}
+      <div className={`${isMobile ? 'ml-0' : 'ml-64'} flex-1 p-4 md:p-8`}>
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-4 md:p-8 transform transition-all duration-300 hover:shadow-2xl">
+            <div className="flex items-center gap-3 mb-6 md:mb-8">
               {calculatorType === 'average' ? (
-                <StockAverageCalculator />
+                <>
+                  <Calculator className="w-6 h-6 md:w-8 md:h-8 text-green-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">Stock market average calculator</h1>
+                </>
               ) : calculatorType === 'split' ? (
-                <StockSplitCalculator />
+                <>
+                  <Split className="w-6 h-6 md:w-8 md:h-8 text-green-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">Stock Split Calculator</h1>
+                </>
               ) : calculatorType === 'emi' ? (
-                <EMICalculator />
+                <>
+                  <IndianRupee className="w-6 h-6 md:w-8 md:h-8 text-green-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">EMI Calculator</h1>
+                </>
               ) : calculatorType === 'sip' ? (
-                <SIPCalculator />
+                <>
+                  <Coins className="w-6 h-6 md:w-8 md:h-8 text-green-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">SIP Calculator</h1>
+                </>
               ) : calculatorType === 'future' ? (
-                <FutureValueCalculator />
+                <>
+                  <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-orange-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">Future Value Calculator</h1>
+                </>
               ) : calculatorType === 'age' ? (
-                <AgeCalculator />
+                <>
+                  <Calendar className="w-6 h-6 md:w-8 md:h-8 text-purple-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">Age Calculator</h1>
+                </>
               ) : calculatorType === 'bmi' ? (
-                <BMICalculator />
+                <>
+                  <Weight className="w-6 h-6 md:w-8 md:h-8 text-orange-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">BMI Calculator</h1>
+                </>
               ) : (
-                <TripCalculator />
+                <>
+                  <MapPin className="w-6 h-6 md:w-8 md:h-8 text-green-600 animate-bounce" />
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-800">Trip Calculator</h1>
+                </>
               )}
             </div>
+            
+            {calculatorType === 'average' ? (
+              <StockAverageCalculator />
+            ) : calculatorType === 'split' ? (
+              <StockSplitCalculator />
+            ) : calculatorType === 'emi' ? (
+              <EMICalculator />
+            ) : calculatorType === 'sip' ? (
+              <SIPCalculator />
+            ) : calculatorType === 'future' ? (
+              <FutureValueCalculator />
+            ) : calculatorType === 'age' ? (
+              <AgeCalculator />
+            ) : calculatorType === 'bmi' ? (
+              <BMICalculator />
+            ) : (
+              <TripCalculator />
+            )}
           </div>
         </div>
       </div>
