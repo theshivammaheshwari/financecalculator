@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign, Instagram, Facebook, Phone, Mail } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign, Instagram, Facebook, Linkedin, Phone, Mail } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { differenceInDays, differenceInMonths, differenceInYears, format } from 'date-fns';
 
@@ -1814,13 +1814,13 @@ function App() {
                 </p>
                 
                 <div className="flex flex-col space-y-2">
-                  <a href="tel:+91999999999" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <a href="tel:+919468955596" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Phone className="h-4 w-4 mr-2" />
                     <span>+91 9468955596</span>
                   </a>
-                  <a href="mailto:contact@example.com" className="flex items-center text-gray-600 hover:text-purple-700">
+                  <a href="mailto:247shivam@gmail.com" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Mail className="h-4 w-4 mr-2" />
-                    <span>theshivammaheshwari@gmail.com</span>
+                    <span>247shivam@gmail.com</span>
                   </a>
                   <a href="https://instagram.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
                     <Instagram className="h-4 w-4 mr-2" />
