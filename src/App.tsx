@@ -1813,8 +1813,7 @@ function App() {
                 </p>
                 <p className="mb-4 text-xs">
                   Grateful to <a href="https://www.linkedin.com/in/abhishek-jain-794773a2/" >
-           Mr. Abhishek Jain
-          </a>
+           Mr. Abhishek Jain </a>
                    for providing insightful suggestions that helped improve the user experience.
                 </p>
                 
@@ -1836,7 +1835,7 @@ function App() {
                     <span>Facebook</span>
                   </a>
                   <a href="https://www.linkedin.com/in/theshivammaheshwari/" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
-                    <Facebook className="h-4 w-4 mr-2" />
+                    <Linkedin className="h-4 w-4 mr-2" />
                     <span>Linkedin</span>
                   </a>
                 </div>
