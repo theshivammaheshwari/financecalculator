@@ -1814,9 +1814,9 @@ function App() {
                   </a>
                 </p>
                 <p className="mb-4 text-xs">
-                  Grateful to  <a href="https://linkedin.com/in/abhijain007" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                  Grateful to <a href="https://linkedin.com/in/abhijain007" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
                     <span>Mr. Abhishek Jain </span>
-                  </a>for providing insightful suggestions that helped improve the user experience.
+                  </a>for providing insightful suggestions.
                 </p>
                 
                 <div className="flex flex-col space-y-2">
