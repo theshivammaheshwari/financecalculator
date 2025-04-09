@@ -1830,6 +1830,10 @@ function App() {
                     <Facebook className="h-4 w-4 mr-2" />
                     <span>Facebook</span>
                   </a>
+                  <a href="https://linkedin.com/in/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Linkedin className="h-4 w-4 mr-2" />
+                    <span>Linkedin</span>
+                  </a>
                 </div>
               </div>
             </div>
