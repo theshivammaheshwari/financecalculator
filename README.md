@@ -3,6 +3,7 @@
 
 ## 📌 Introduction
 This is a React-based web application that calculates the average price of stocks based on user input. The project is built using **Vite**, **React**, and **Tailwind CSS**, and is deployed on **GitHub Pages**.
+https://theshivammaheshwari.github.io/financecalculator/
 
 ## 🚀 Features
 - 📊 **Stock Average Calculation**: Input multiple stock prices and quantities to get the average price.
