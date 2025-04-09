@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign } from 'lucide-react';
+import { Calculator, RefreshCw, TrendingUp, IndianRupee, Coins, Wallet, ArrowUpRight, Split, MapPin, Calendar, Weight, DollarSign, Instagram, Facebook, Phone, Mail } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { differenceInDays, differenceInMonths, differenceInYears, format } from 'date-fns';
 
@@ -1707,7 +1707,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="flex">
         <div className="w-64 bg-white shadow-lg h-screen fixed left-0 top-0">
-          <div className="p-4">
+          <div className="p-4 flex flex-col h-full">
             <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-8">
               <Calculator className="h-6 w-6" />
               Calculators
@@ -1802,6 +1802,37 @@ function App() {
                 BMI Calculator
               </button>
             </nav>
+            
+            {/* Footer with credits and contact information */}
+            <div className="mt-auto pt-6 border-t border-gray-200">
+              <div className="text-sm text-gray-600">
+                <p className="mb-2 font-medium">
+                  This website was conceptualized and developed by Mr. Shivam Maheshwari
+                </p>
+                <p className="mb-4 text-xs">
+                  Grateful to Mr. Abhishek Jain for providing insightful suggestions that helped improve the user experience.
+                </p>
+                
+                <div className="flex flex-col space-y-2">
+                  <a href="tel:+91999999999" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Phone className="h-4 w-4 mr-2" />
+                    <span>+91 9468955596</span>
+                  </a>
+                  <a href="mailto:contact@example.com" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span>theshivammaheshwari.com</span>
+                  </a>
+                  <a href="https://instagram.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Instagram className="h-4 w-4 mr-2" />
+                    <span>Instagram</span>
+                  </a>
+                  <a href="https://facebook.com/theshivammaheshwari" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-purple-700">
+                    <Facebook className="h-4 w-4 mr-2" />
+                    <span>Facebook</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
